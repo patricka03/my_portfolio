@@ -1,107 +1,127 @@
-// DOM Elements
-const cursorDot = document.getElementById('cursor-dot');
-const cursorOutline = document.getElementById('cursor-outline');
-const navLink = document.getElementById('nav-link');
+// Custom cursor effect
+document.addEventListener('DOMContentLoaded', function() {
+  const cursorDot = document.getElementById('cursor-dot');
+  const cursorOutline = document.getElementById('cursor-outline');
 
-console.log(cursorDot)
-console.log(cursorOutline)
-console.log(navLink)
-
-
-Initialising the animation
-function initCustomCursor() {
-  if (cursorDot && cursorOutline && window.innerWidth > 1024) {
-    // Track mouse movement
-    document.addEventListener('mousemove', (e) => {
+  // Only enable custom cursor on non-touch devices with screen width > 768px
+  if (window.matchMedia("(min-width: 768px)").matches && !('ontouchstart' in window)) {
+    document.addEventListener('mousemove', function(e) {
       const posX = e.clientX;
       const posY = e.clientY;
-      cursorDot.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
-      setTimeout(() => {
-        cursorOutline.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
-      }, 50);
+
+      cursorDot.style.left = `${posX}px`;
+      cursorDot.style.top = `${posY}px`;
+
+      // Delayed movement for outline
+      setTimeout(function() {
+        cursorOutline.style.left = `${posX}px`;
+        cursorOutline.style.top = `${posY}px`;
+      }, 80);
     });
 
-    // Add hover effects for interactive elements
-    const hoverElements = document.querySelectorAll('a, button, .project-card, .filter-btn');
-
-    hoverElements.forEach(element => {
-      // When mouse enters an interactive element
-      element.addEventListener('mouseenter', () => {
-        // Expand the outline and dot
+    // Scale up effect on links and buttons
+    const clickables = document.querySelectorAll('a, button, .btn, input[type="submit"]');
+    clickables.forEach(elem => {
+      elem.addEventListener('mouseenter', function() {
         cursorOutline.style.width = '60px';
         cursorOutline.style.height = '60px';
-        cursorDot.style.transform = 'scale(1.5)';
+        cursorOutline.style.backgroundColor = 'rgba(0, 123, 255, 0.1)';
       });
 
-      // When mouse leaves an interactive element
-      element.addEventListener('mouseleave', () => {
-        // Return to original size
+      elem.addEventListener('mouseleave', function() {
         cursorOutline.style.width = '40px';
         cursorOutline.style.height = '40px';
-        cursorDot.style.transform = 'scale(1)';
+        cursorOutline.style.backgroundColor = 'transparent';
       });
     });
+  } else {
+    // Hide custom cursor on mobile/touch devices
+    cursorDot.style.display = 'none';
+    cursorOutline.style.display = 'none';
   }
-}
 
-window.addEventListener('scroll', () => {
-  const scrollPosition = window.scrollY;
+  // Mobile menu toggle
+  const menuToggle = document.createElement('button');
+  menuToggle.className = 'menu-toggle';
+  menuToggle.innerHTML = '☰';
+  menuToggle.setAttribute('aria-label', 'Toggle navigation menu');
 
-  sections.forEach(section => {
-    const sectionTop = section.offsetTop - 100;
-    const sectionHeight = section.offsetHeight;
-    const sectionId = section.getAttribute('id');
+  const navbar = document.querySelector('.navbar .container');
+  const navUl = document.querySelector('.horizontal-nav');
 
-    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-      document.querySelector(`.nav-link[href="#${sectionId}"]`)?.classList.add('active');
-    } else {
-      document.querySelector(`.nav-link[href="#${sectionId}"]`)?.classList.remove('active');
+  // Insert the menu toggle button before the navigation
+  navbar.insertBefore(menuToggle, navbar.querySelector('div:last-child'));
+
+  // Toggle mobile menu
+  menuToggle.addEventListener('click', function() {
+    navUl.classList.toggle('active');
+    menuToggle.innerHTML = navUl.classList.contains('active') ? '✕' : '☰';
+  });
+
+  // Close mobile menu when clicking a nav link
+  const navLinks = document.querySelectorAll('.nav-link');
+  navLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      if (window.innerWidth <= 900) {
+        navUl.classList.remove('active');
+        menuToggle.innerHTML = '☰';
+      }
+    });
+  });
+
+  // Close mobile menu when resizing window
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 900) {
+      navUl.classList.remove('active');
+      menuToggle.innerHTML = '☰';
     }
   });
-});
 
-document.addEventListener('DOMContentLoaded', () => {
-  initCustomCursor();
-});
+  // Animate progress bars when visible
+  const progressBars = document.querySelectorAll('.progress-bar');
 
-Add active class to nav link
-window.addEventListener('scroll', () => {
-  const scrollPosition = window.scrollY;
+  // Function to check if element is in viewport
+  function isInViewport(element) {
+    const rect = element.getBoundingClientRect();
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  }
 
-  sections.forEach(section => {
-    const sectionTop = section.offsetTop - 100;
-    const sectionHeight = section.offsetHeight;
-    const sectionId = section.getAttribute('id');
+  // Function to animate progress bars when they're visible
+  function animateProgressBars() {
+    progressBars.forEach(bar => {
+      if (isInViewport(bar) && !bar.classList.contains('animated')) {
+        const width = bar.style.width;
+        bar.style.width = '0%';
 
-    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-      document.querySelector(`.nav-link[href="#${sectionId}"]`)?.classList.add('active');
-    } else {
-      document.querySelector(`.nav-link[href="#${sectionId}"]`)?.classList.remove('active');
-    }
-  });
-});
-nameElement.addEventListener("mouseenter", () => {
-    nameElement.style.color = "red"; // Change color on hover
-  });
+        setTimeout(() => {
+          bar.style.width = width;
+          bar.classList.add('animated');
+        }, 100);
+      }
+    });
+  }
 
-  nameElement.addEventListener("mouseleave", () => {
-    nameElement.style.color = "black"; // Reset color when mouse leaves
-  });
+  // Run on page load and scroll
+  window.addEventListener('scroll', animateProgressBars);
+  window.addEventListener('load', animateProgressBars);
 
+  // Smooth scrolling for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
 
-Select all nav links
-const links = document.querySelectorAll("#nav-link a");
-
-links.forEach(link => {
-  link.addEventListener("mouseenter", () => {
-    link.style.color = "#bcd4e6";
-    link.style.fontWeight = "bold";
-    link.style.textDecoration = "underline";
-  });
-
-  link.addEventListener("mouseleave", () => {
-    link.style.color = "grey";
-    link.style.fontWeight = "normal";
-    link.style.textDecoration = "none";
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
   });
 });
