@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Animate progress bars when visible
-  const progressBars = document.querySelectorAll('.progress-bar');
+  // const progressBars = document.querySelectorAll('.progress-bar');
 
   // Function to check if element is in viewport
   function isInViewport(element) {
@@ -92,23 +92,23 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Function to animate progress bars when they're visible
-  function animateProgressBars() {
-    progressBars.forEach(bar => {
-      if (isInViewport(bar) && !bar.classList.contains('animated')) {
-        const width = bar.style.width;
-        bar.style.width = '0%';
+  // function animateProgressBars() {
+  //   progressBars.forEach(bar => {
+  //     if (isInViewport(bar) && !bar.classList.contains('animated')) {
+  //       const width = bar.style.width;
+  //       bar.style.width = '0%';
 
-        setTimeout(() => {
-          bar.style.width = width;
-          bar.classList.add('animated');
-        }, 100);
-      }
-    });
-  }
+  //       setTimeout(() => {
+  //         bar.style.width = width;
+  //         bar.classList.add('animated');
+  //       }, 100);
+  //     }
+  //   });
+  // }
 
   // Run on page load and scroll
-  window.addEventListener('scroll', animateProgressBars);
-  window.addEventListener('load', animateProgressBars);
+  // window.addEventListener('scroll', animateProgressBars);
+  // window.addEventListener('load', animateProgressBars);
 
   // Smooth scrolling for anchor links
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
